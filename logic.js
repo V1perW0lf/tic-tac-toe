@@ -12,7 +12,7 @@ function createPlayer(pName="Player", pToken="X") {
     function getScore() {
         return score;
     }
-    return {name, marks, token, rowScore, increaseScore, getScore}
+    return {name, marks, token, rowScore, colScore, increaseScore, getScore}
 }
 
 const gameBoard = (function() {
@@ -21,6 +21,7 @@ const gameBoard = (function() {
         if(board[row][col] == '') {
             board[row][col] = player.token;
             player.rowScore.push(row);
+            player.colScore.push(col);
             player.marks++;
             if(player.marks > 2) {
                 checkWinner(player);
@@ -29,12 +30,16 @@ const gameBoard = (function() {
         else   
             alert('Invalid move');
     }
-    function count(player, val) {
-        return player.rowScore.filter(x => x==val).length
+    function countRowOrColScore(rowOrColScore, val) {
+        return rowOrColScore.filter(x => x==val).length
     }
     function checkWinner(player) {
-        if(count(player, 0) > 2 || count(player, 1) > 2 || count(player, 2) > 2) {
-            console.log("WE HAVE A WINNER!!!")
+        const rowScore = player.rowScore;
+        const colScore = player.colScore;
+        if(countRowOrColScore(rowScore, 0) > 2 || countRowOrColScore(rowScore, 1) > 2 || countRowOrColScore(rowScore, 2) > 2) {
+            console.log("WE HAVE A WINNER!!!");
+        } else if (countRowOrColScore(colScore, 0) > 2 || countRowOrColScore(colScore, 1) > 2 || countRowOrColScore(colScore, 2) > 2) {
+            console.log("WE HAVE A WINNER!!!");
         }
     }
     return {board, addMove};
