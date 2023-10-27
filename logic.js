@@ -23,15 +23,18 @@ const gameBoard = (function () {
             const gameSquare = document.createElement('div');
             gameSquare.classList.add('game-square');
             gameSquare.addEventListener('click', () => {
-                gameSquare.innerText = game.getCurrentPlayer().token;
-                addMove(i, j, game.getCurrentPlayer());
-                game.switchPlayer();
+                if(gameSquare.innerText == '') {
+                    gameSquare.innerText = game.getCurrentPlayer().token;
+                    addMove(i, j, game.getCurrentPlayer());
+                    game.switchPlayer();
+                } else {
+                    alert('Invalid move');
+                }
             })
             gameContainer.appendChild(gameSquare);
         }
     }
     function addMove(row, col, player) {
-        if (board[row][col] == '') {
             board[row][col] = player.token;
             player.rowScore.push(row);
             player.colScore.push(col);
@@ -40,9 +43,6 @@ const gameBoard = (function () {
             if (player.marks > 2) {
                 checkWinner(player);
             }
-        }
-        else
-            alert('Invalid move');
     }
     function countRowOrColScore(rowOrColScore, val) {
         return rowOrColScore.filter(x => x == val).length
