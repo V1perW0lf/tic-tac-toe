@@ -1,4 +1,4 @@
-function createPlayer(pName="Player", pToken="X") {
+function createPlayer(pName = "Player", pToken = "X") {
     const name = pName;
     const token = pToken;
     const rowScore = [];
@@ -12,41 +12,48 @@ function createPlayer(pName="Player", pToken="X") {
     function getScore() {
         return score;
     }
-    return {name, marks, token, rowScore, colScore, increaseScore, getScore}
+    return { name, marks, token, rowScore, colScore, diagScore, increaseScore, getScore }
 }
 
-const gameBoard = (function() {
+const gameBoard = (function () {
     let board = [...Array(3)].map(e => Array(3).fill(''));
     function addMove(row, col, player) {
-        if(board[row][col] == '') {
+        if (board[row][col] == '') {
             board[row][col] = player.token;
             player.rowScore.push(row);
             player.colScore.push(col);
+            player.diagScore.push(row + '' + col);
             player.marks++;
-            if(player.marks > 2) {
+            if (player.marks > 2) {
                 checkWinner(player);
             }
         }
-        else   
+        else
             alert('Invalid move');
     }
     function countRowOrColScore(rowOrColScore, val) {
-        return rowOrColScore.filter(x => x==val).length
+        return rowOrColScore.filter(x => x == val).length
     }
     function checkWinner(player) {
         const rowScore = player.rowScore;
         const colScore = player.colScore;
-        if(countRowOrColScore(rowScore, 0) > 2 || countRowOrColScore(rowScore, 1) > 2 || countRowOrColScore(rowScore, 2) > 2) {
+        const diagScore = player.diagScore;
+        if (countRowOrColScore(rowScore, 0) > 2 || countRowOrColScore(rowScore, 1) > 2 || countRowOrColScore(rowScore, 2) > 2) {
             console.log("WE HAVE A WINNER!!!");
         } else if (countRowOrColScore(colScore, 0) > 2 || countRowOrColScore(colScore, 1) > 2 || countRowOrColScore(colScore, 2) > 2) {
             console.log("WE HAVE A WINNER!!!");
+        } else if (diagScore.includes('11')) {
+            if ((diagScore.includes('00') && diagScore.includes('22')) ||
+                (diagScore.includes('02') && diagScore.includes('20'))) {
+                console.log("WE HAVE A DIAG WINNER!!");
+            }
         }
     }
-    return {board, addMove};
+    return { board, addMove };
 })();
 
-const game = (function() {
+const game = (function () {
     const p1 = createPlayer('CJ', 'X');
     const p2 = createPlayer('Taryn', 'O');
-    return {p1, p2};
+    return { p1, p2 };
 })();
