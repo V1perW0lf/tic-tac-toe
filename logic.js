@@ -47,6 +47,8 @@ const gameBoard = (function () {
                 (diagScore.includes('02') && diagScore.includes('20'))) {
                 console.log("WE HAVE A DIAG WINNER!!");
             }
+        } else if (game.p1.diagScore.length + game.p2.diagScore.length == 9) {
+            console.log("IT'S A TIE!!");
         }
     }
     return { board, addMove };
