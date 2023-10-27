@@ -17,6 +17,19 @@ function createPlayer(pName = "Player", pToken = "X") {
 
 const gameBoard = (function () {
     let board = [...Array(3)].map(e => Array(3).fill(''));
+    const gameContainer = document.querySelector('div.game-container');
+    for (let i = 0; i < board.length; i++) {
+        for(let j = 0; j < board[i].length; j++) {
+            const gameSquare = document.createElement('div');
+            gameSquare.classList.add('game-square');
+            gameSquare.addEventListener('click', () => {
+                gameSquare.innerText = game.getCurrentPlayer().token;
+                addMove(i, j, game.getCurrentPlayer());
+                game.switchPlayer();
+            })
+            gameContainer.appendChild(gameSquare);
+        }
+    }
     function addMove(row, col, player) {
         if (board[row][col] == '') {
             board[row][col] = player.token;
@@ -57,5 +70,14 @@ const gameBoard = (function () {
 const game = (function () {
     const p1 = createPlayer('CJ', 'X');
     const p2 = createPlayer('Taryn', 'O');
-    return { p1, p2 };
+    let playerSelector = true;
+    let currentPlayer = p1;
+    function switchPlayer() {
+        playerSelector = !playerSelector;
+        currentPlayer = playerSelector ? p1 : p2;
+    }
+    function getCurrentPlayer() {
+        return currentPlayer;
+    }
+    return { p1, p2, getCurrentPlayer, switchPlayer};
 })();
