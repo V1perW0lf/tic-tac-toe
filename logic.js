@@ -17,6 +17,7 @@ function createPlayer(pName = "Player", pToken = "X") {
 
 const gameBoard = (function () {
     let board = [...Array(3)].map(e => Array(3).fill(''));
+    let gameOver = false;
     const gameContainer = document.querySelector('div.game-container');
     for (let i = 0; i < board.length; i++) {
         for(let j = 0; j < board[i].length; j++) {
@@ -26,7 +27,15 @@ const gameBoard = (function () {
                 if(gameSquare.innerText == '') {
                     gameSquare.innerText = game.getCurrentPlayer().token;
                     addMove(i, j, game.getCurrentPlayer());
-                    game.switchPlayer();
+                    if(!gameOver) {
+                        game.switchPlayer();
+                    }
+                    else {
+                        const gameSquares = document.querySelectorAll('div.game-square');
+                        gameSquares.forEach((square) => {
+                            square.style.pointerEvents = 'none';
+                        });
+                    } 
                 } else {
                     alert('Invalid move');
                 }
@@ -35,14 +44,14 @@ const gameBoard = (function () {
         }
     }
     function addMove(row, col, player) {
-            board[row][col] = player.token;
-            player.rowScore.push(row);
-            player.colScore.push(col);
-            player.diagScore.push(row + '' + col);
-            player.marks++;
-            if (player.marks > 2) {
-                checkWinner(player);
-            }
+        board[row][col] = player.token;
+        player.rowScore.push(row);
+        player.colScore.push(col);
+        player.diagScore.push(row + '' + col);
+        player.marks++;
+        if (player.marks > 2) {
+            checkWinner(player);
+        }
     }
     function countRowOrColScore(rowOrColScore, val) {
         return rowOrColScore.filter(x => x == val).length
@@ -52,16 +61,20 @@ const gameBoard = (function () {
         const colScore = player.colScore;
         const diagScore = player.diagScore;
         if (countRowOrColScore(rowScore, 0) > 2 || countRowOrColScore(rowScore, 1) > 2 || countRowOrColScore(rowScore, 2) > 2) {
-            console.log("WE HAVE A WINNER!!!");
+            game.message.innerText = game.getCurrentPlayer().name + " has won!";
+            gameOver = true;
         } else if (countRowOrColScore(colScore, 0) > 2 || countRowOrColScore(colScore, 1) > 2 || countRowOrColScore(colScore, 2) > 2) {
-            console.log("WE HAVE A WINNER!!!");
+            game.message.innerText = game.getCurrentPlayer().name + " has won!";
+            gameOver = true;
+        }  else if (game.p1.diagScore.length + game.p2.diagScore.length == 9) {
+            game.message.innerText = "The game has ended in a tie!";
+            gameOver = true;
         } else if (diagScore.includes('11')) {
             if ((diagScore.includes('00') && diagScore.includes('22')) ||
                 (diagScore.includes('02') && diagScore.includes('20'))) {
-                console.log("WE HAVE A DIAG WINNER!!");
+                    game.message.innerText = game.getCurrentPlayer().name + " has won!";
+                    gameOver = true;
             }
-        } else if (game.p1.diagScore.length + game.p2.diagScore.length == 9) {
-            console.log("IT'S A TIE!!");
         }
     }
     return { board, addMove };
@@ -72,12 +85,15 @@ const game = (function () {
     const p2 = createPlayer('Taryn', 'O');
     let playerSelector = true;
     let currentPlayer = p1;
+    const message = document.querySelector('div.game-text');
+    message.innerText = `It is ${currentPlayer.name}'s turn`
     function switchPlayer() {
         playerSelector = !playerSelector;
         currentPlayer = playerSelector ? p1 : p2;
+        message.innerText = `It is ${currentPlayer.name}'s turn`
     }
     function getCurrentPlayer() {
         return currentPlayer;
     }
-    return { p1, p2, getCurrentPlayer, switchPlayer};
+    return { p1, p2, getCurrentPlayer, switchPlayer, message };
 })();

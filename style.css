@@ -6,6 +6,10 @@ body {
     margin: 0;
 }
 
+.game-text {
+    text-align: center;
+}
+
 .game-container {
     display: grid;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
