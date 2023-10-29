@@ -6,6 +6,11 @@ body {
     margin: 0;
 }
 
+.points-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .game-text {
     text-align: center;
 }

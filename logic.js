@@ -19,6 +19,10 @@ const gameBoard = (function () {
     let board = [...Array(3)].map(e => Array(3).fill(''));
     let gameOver = false;
     const gameContainer = document.querySelector('div.game-container');
+    const restartButton = document.querySelector('button.restart-btn');
+    restartButton.addEventListener('click', () => {
+        restart();
+    })
     for (let i = 0; i < board.length; i++) {
         for(let j = 0; j < board[i].length; j++) {
             const gameSquare = document.createElement('div');
@@ -39,7 +43,7 @@ const gameBoard = (function () {
                 } else {
                     alert('Invalid move');
                 }
-            })
+            });
             gameContainer.appendChild(gameSquare);
         }
     }
@@ -54,7 +58,7 @@ const gameBoard = (function () {
         }
     }
     function countRowOrColScore(rowOrColScore, val) {
-        return rowOrColScore.filter(x => x == val).length
+        return rowOrColScore.filter(x => x == val).length;
     }
     function checkWinner(player) {
         const rowScore = player.rowScore;
@@ -63,9 +67,11 @@ const gameBoard = (function () {
         if (countRowOrColScore(rowScore, 0) > 2 || countRowOrColScore(rowScore, 1) > 2 || countRowOrColScore(rowScore, 2) > 2) {
             game.message.innerText = game.getCurrentPlayer().name + " has won!";
             gameOver = true;
+            awardPoint();
         } else if (countRowOrColScore(colScore, 0) > 2 || countRowOrColScore(colScore, 1) > 2 || countRowOrColScore(colScore, 2) > 2) {
             game.message.innerText = game.getCurrentPlayer().name + " has won!";
             gameOver = true;
+            awardPoint();
         }  else if (game.p1.diagScore.length + game.p2.diagScore.length == 9) {
             game.message.innerText = "The game has ended in a tie!";
             gameOver = true;
@@ -74,26 +80,61 @@ const gameBoard = (function () {
                 (diagScore.includes('02') && diagScore.includes('20'))) {
                     game.message.innerText = game.getCurrentPlayer().name + " has won!";
                     gameOver = true;
+                    awardPoint();
             }
         }
+        function awardPoint() {
+            player.increaseScore();
+            game.p1Points.innerText = `${game.p1.name}'s score: ${game.p1.getScore()}`;
+            game.p2Points.innerText = `${game.p2.name}'s score: ${game.p2.getScore()}`;
+        }
     }
-    return { board, addMove };
+    function restart() {
+        gameOver = false;
+        game.p1.colScore.length = 0;
+        game.p1.rowScore.length = 0;
+        game.p1.diagScore.length = 0;
+        game.p1.marks = 0;
+
+        game.p2.colScore.length = 0;
+        game.p2.rowScore.length = 0;
+        game.p2.diagScore.length = 0;
+        game.p2.marks = 0;
+
+        board = [...Array(3)].map(e => Array(3).fill(''));
+        const gameSquares = document.querySelectorAll('div.game-square');
+        gameSquares.forEach((square) => {
+            square.innerText = '';
+            square.style.pointerEvents = 'auto';
+        })
+        game.setCurrentPlayer(game.p1, true);
+        game.message.innerText = `It is ${game.p1.name}'s turn`;
+    }
+    return { addMove, restart };
 })();
 
 const game = (function () {
-    const p1 = createPlayer('CJ', 'X');
-    const p2 = createPlayer('Taryn', 'O');
+    const p1 = createPlayer(prompt("Enter player one's name: "), 'X');
+    const p2 = createPlayer(prompt("Enter player two's name: "), 'O');
     let playerSelector = true;
     let currentPlayer = p1;
     const message = document.querySelector('div.game-text');
-    message.innerText = `It is ${currentPlayer.name}'s turn`
+    message.innerText = `It is ${currentPlayer.name}'s turn`;
+    const p1Points = document.querySelector('div.p1-points');
+    const p2Points = document.querySelector('div.p2-points');
+    p1Points.innerText = `${p1.name}'s score: ${p1.getScore()}`;
+    p2Points.innerText = `${p2.name}'s score: ${p2.getScore()}`;
     function switchPlayer() {
         playerSelector = !playerSelector;
         currentPlayer = playerSelector ? p1 : p2;
-        message.innerText = `It is ${currentPlayer.name}'s turn`
+        message.innerText = `It is ${currentPlayer.name}'s turn`;
     }
     function getCurrentPlayer() {
         return currentPlayer;
     }
-    return { p1, p2, getCurrentPlayer, switchPlayer, message };
+    function setCurrentPlayer(player, selector) {
+        playerSelector = selector;
+        currentPlayer = player;
+    }
+    return { p1, p2, getCurrentPlayer, setCurrentPlayer, switchPlayer, message, p1Points, p2Points };
 })();
